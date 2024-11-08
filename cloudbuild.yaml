@@ -1,0 +1,43 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Docker Image'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REPO}/my-flask-app:$SHORT_SHA', '.']
+
+  # Step 2: Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push Docker Image'
+    args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REPO}/my-flask-app:$SHORT_SHA']
+
+  # Step 3: Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Deploy to Cloud Run'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'my-flask-service'
+      - '--image=us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REPO}/my-flask-app:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+
+  # Step 4: Verify the deployment status
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Check Deployment Status'
+    args: ['run', 'services', 'describe', 'my-flask-service', '--region=us-central1']
+
+images:
+  - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REPO}/my-flask-app:$SHORT_SHA'
+
+timeout: '1200s'
+
+
+substitutions:
+  _PROJECT_ID: "win-gke-cicd"  # Replace with the actual project ID or set dynamically in GitHub Actions
+  _ARTIFACT_REPO: "win-repo"
+
+
+logsBucket: "gs://win-gke-cicd-log"
+
+#options:
+#  logging: CLOUD_LOGGING_ONLY

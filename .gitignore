@@ -66,8 +66,8 @@ docker-compose.override.yml
 kubectl-config
 
 # Cloud Build
-.cloudbuild/
-cloudbuild.yaml
+#.cloudbuild/
+#cloudbuild.yaml
 *.tfstate
 .terraform/
 

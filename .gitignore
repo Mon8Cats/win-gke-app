@@ -54,7 +54,7 @@ debug/
 
 # Docker
 *.dockerignore
-Dockerfile
+#Dockerfile
 docker-compose.yml
 .docker/
 docker-compose.override.yml

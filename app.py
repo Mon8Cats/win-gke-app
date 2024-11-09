@@ -4,9 +4,13 @@
 
 from flask import Flask
 from flask_restx import Api, Resource, fields
+from flask_cors import CORS
 
 app = Flask(__name__)
-api = Api(app, doc="/swagger", title="User API", description="A Flask API for CRUD operations on users")
+CORS(app)
+api = Api(app, doc="/swagger", title="User API", version="1.0", description="A Flask API for CRUD operations on users")
+#api = Api(app, title="User API", version="1.0", description="A Flask API for CRUD operations on users", doc="/swagger")
+app.config["RESTX_MASK_SWAGGER"] = False
 
 # Define the User model
 user_model = api.model("User", {
@@ -16,8 +20,16 @@ user_model = api.model("User", {
 })
 
 # In-memory database
-users = []
-user_id_counter = 1
+users = [
+    {"id": 1, "name": "John Doe", "email": "john.doe@example.com"},
+    {"id": 2, "name": "Jane Smith", "email": "jane.smith@example.com"},
+    {"id": 3, "name": "Alice Johnson", "email": "alice.johnson@example.com"},
+    {"id": 4, "name": "Bob Brown", "email": "bob.brown@example.com"},
+    {"id": 5, "name": "Charlie Davis", "email": "charlie.davis@example.com"}
+]
+
+
+user_id_counter = 6
 
 # Helper function to find user by ID
 def find_user(user_id):
@@ -71,9 +83,13 @@ class User(Resource):
         users.remove(user)
         return {"message": "User deleted"}, 200
 
+@api.errorhandler
+def default_error_handler(error):
+    """Default error handler"""
+    return {"message": str(error)}, getattr(error, "code", 500)
+
 if __name__ == "__main__":
-    #app.run(debug=True)
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
 
 
 #

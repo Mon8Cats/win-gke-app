@@ -2,22 +2,28 @@
 # pylint: disable=import-error
 #
 
-from flask import Flask
-from flask_restx import Api, Resource, fields
-from flask_cors import CORS
+from flask import Flask, request
+from flask_smorest import Api, Blueprint
+from marshmallow import Schema, fields
+from flask.views import MethodView
 
 app = Flask(__name__)
-CORS(app)
-api = Api(app, doc="/swagger", title="User API", version="1.0", description="A Flask API for CRUD operations on users")
-#api = Api(app, title="User API", version="1.0", description="A Flask API for CRUD operations on users", doc="/swagger")
-app.config["RESTX_MASK_SWAGGER"] = False
+app.config["API_TITLE"] = "User API"
+app.config["API_VERSION"] = "1.0"
+app.config["OPENAPI_VERSION"] = "3.0.2"
+app.config["OPENAPI_URL_PREFIX"] = "/"
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger"
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-# Define the User model
-user_model = api.model("User", {
-    "id": fields.Integer(readOnly=True, description="The user ID"),
-    "name": fields.String(required=True, description="The user name"),
-    "email": fields.String(required=True, description="The user email")
-})
+api = Api(app)
+
+blp = Blueprint("users", "users", url_prefix="/users", description="Operations on users")
+
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True)
+    email = fields.Str(required=True)
+
 
 # In-memory database
 users = [
@@ -28,71 +34,57 @@ users = [
     {"id": 5, "name": "Charlie Davis", "email": "charlie.davis@example.com"}
 ]
 
-
 user_id_counter = 6
 
-# Helper function to find user by ID
 def find_user(user_id):
     return next((user for user in users if user["id"] == user_id), None)
 
-# User Resource
-@api.route("/users")
-class UserList(Resource):
-    @api.marshal_list_with(user_model)
+@blp.route("/")
+class UserListResource(MethodView):
+    @blp.response(200, UserSchema(many=True))
     def get(self):
         """Get all users"""
         return users
 
-    @api.expect(user_model)
-    @api.marshal_with(user_model, code=201)
-    def post(self):
+    @blp.arguments(UserSchema)
+    @blp.response(201, UserSchema)
+    def post(self, new_user):
         """Create a new user"""
         global user_id_counter
-        data = api.payload
-        data["id"] = user_id_counter
-        users.append(data)
+        new_user["id"] = user_id_counter
+        users.append(new_user)
         user_id_counter += 1
-        return data, 201
+        return new_user
 
-@api.route("/users/<int:user_id>")
-class User(Resource):
-    @api.marshal_with(user_model)
+@blp.route("/<int:user_id>")
+class UserResource(MethodView):
+    @blp.response(200, UserSchema)
     def get(self, user_id):
         """Get a user by ID"""
         user = find_user(user_id)
         if not user:
-            api.abort(404, "User not found")
+            return {"message": "User not found"}, 404
         return user
 
-    @api.expect(user_model)
-    @api.marshal_with(user_model)
-    def put(self, user_id):
+    @blp.arguments(UserSchema)
+    @blp.response(200, UserSchema)
+    def put(self, updated_user, user_id):
         """Update a user"""
         user = find_user(user_id)
         if not user:
-            api.abort(404, "User not found")
-        data = api.payload
-        user.update(data)
+            return {"message": "User not found"}, 404
+        user.update(updated_user)
         return user
 
     def delete(self, user_id):
         """Delete a user"""
         user = find_user(user_id)
         if not user:
-            api.abort(404, "User not found")
+            return {"message": "User not found"}, 404
         users.remove(user)
         return {"message": "User deleted"}, 200
 
-@api.errorhandler
-def default_error_handler(error):
-    """Default error handler"""
-    return {"message": str(error)}, getattr(error, "code", 500)
+api.register_blueprint(blp)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=False)
-
-
-#
-# end of file
-#
-

@@ -1,1 +1,5 @@
 flask
+flask-swagger-ui
+flask-restx
+flask-smorest
+gunicorn

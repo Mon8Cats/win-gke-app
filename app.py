@@ -1,20 +1,24 @@
 # pylint: disable=import-error
-from flask import Flask
-import os
-import socket
+from flask import Flask, jsonify
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello():
-    # Get the hostname (works both locally and in GKE)
-    hostname = socket.gethostname()
+# Swagger UI configuration
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'  # The URL pointing to the API definition
 
-    # Try to get the node name from the environment variable (for GKE)
-    node_name = os.getenv("NODE_NAME", hostname)  # Fallback to hostname if NODE_NAME is not set
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={'app_name': "Flask API"}
+)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-    return f"Hello, Brandee from Flask! Served by node: {node_name}, Hostname: {hostname}"
-
+# Sample API endpoint
+@app.route("/api/user", methods=["GET"])
+def get_user():
+    return jsonify({"name": "John", "email": "john@example.com"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

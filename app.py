@@ -1,79 +1,81 @@
+#
 # pylint: disable=import-error
-from flask import Flask, request, jsonify
-from flask_swagger_ui import get_swaggerui_blueprint
+#
+
+from flask import Flask
+from flask_restx import Api, Resource, fields
 
 app = Flask(__name__)
+api = Api(app, doc="/swagger", title="User API", description="A Flask API for CRUD operations on users")
 
-# Swagger UI configuration
-SWAGGER_URL = '/swagger'
-API_URL = '/static/swagger.json'  # The URL pointing to the API definition
+# Define the User model
+user_model = api.model("User", {
+    "id": fields.Integer(readOnly=True, description="The user ID"),
+    "name": fields.String(required=True, description="The user name"),
+    "email": fields.String(required=True, description="The user email")
+})
 
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={'app_name': "Flask API"}
-)
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-
-# In-memory "database"
+# In-memory database
 users = []
+user_id_counter = 1
 
 # Helper function to find user by ID
 def find_user(user_id):
     return next((user for user in users if user["id"] == user_id), None)
 
-# Create a new user (POST /users)
-@app.route("/users", methods=["POST"])
-def create_user():
-    data = request.get_json()
-    if not data.get("name") or not data.get("email"):
-        return jsonify({"error": "Name and email are required"}), 400
+# User Resource
+@api.route("/users")
+class UserList(Resource):
+    @api.marshal_list_with(user_model)
+    def get(self):
+        """Get all users"""
+        return users
 
-    user = {
-        "id": len(users) + 1,
-        "name": data["name"],
-        "email": data["email"]
-    }
-    users.append(user)
-    return jsonify(user), 201
+    @api.expect(user_model)
+    @api.marshal_with(user_model, code=201)
+    def post(self):
+        """Create a new user"""
+        global user_id_counter
+        data = api.payload
+        data["id"] = user_id_counter
+        users.append(data)
+        user_id_counter += 1
+        return data, 201
 
-# Get all users (GET /users)
-@app.route("/users", methods=["GET"])
-def get_users():
-    return jsonify(users), 200
+@api.route("/users/<int:user_id>")
+class User(Resource):
+    @api.marshal_with(user_model)
+    def get(self, user_id):
+        """Get a user by ID"""
+        user = find_user(user_id)
+        if not user:
+            api.abort(404, "User not found")
+        return user
 
-# Get a single user by ID (GET /users/<user_id>)
-@app.route("/users/<int:user_id>", methods=["GET"])
-def get_user(user_id):
-    user = find_user(user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+    @api.expect(user_model)
+    @api.marshal_with(user_model)
+    def put(self, user_id):
+        """Update a user"""
+        user = find_user(user_id)
+        if not user:
+            api.abort(404, "User not found")
+        data = api.payload
+        user.update(data)
+        return user
 
-    return jsonify(user), 200
-
-# Update a user by ID (PUT /users/<user_id>)
-@app.route("/users/<int:user_id>", methods=["PUT"])
-def update_user(user_id):
-    user = find_user(user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    data = request.get_json()
-    user["name"] = data.get("name", user["name"])
-    user["email"] = data.get("email", user["email"])
-
-    return jsonify(user), 200
-
-# Delete a user by ID (DELETE /users/<user_id>)
-@app.route("/users/<int:user_id>", methods=["DELETE"])
-def delete_user(user_id):
-    user = find_user(user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    users.remove(user)
-    return jsonify({"message": "User deleted"}), 200
+    def delete(self, user_id):
+        """Delete a user"""
+        user = find_user(user_id)
+        if not user:
+            api.abort(404, "User not found")
+        users.remove(user)
+        return {"message": "User deleted"}, 200
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+#
+# end of file
+#
+

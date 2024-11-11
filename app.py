@@ -31,10 +31,11 @@ users = [
     {"id": 2, "name": "Jane Smith", "email": "jane.smith@example.com"},
     {"id": 3, "name": "Alice Johnson", "email": "alice.johnson@example.com"},
     {"id": 4, "name": "Bob Brown", "email": "bob.brown@example.com"},
-    {"id": 5, "name": "Charlie Davis", "email": "charlie.davis@example.com"}
+    {"id": 5, "name": "Charlie Davis", "email": "charlie.davis@example.com"},
+    {"id": 6, "name": "Steve Kim", "email": "charlie.davis@example.com"}
 ]
 
-user_id_counter = 6
+user_id_counter = 7
 
 def find_user(user_id):
     return next((user for user in users if user["id"] == user_id), None)

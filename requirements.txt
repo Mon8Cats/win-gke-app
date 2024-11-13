@@ -4,3 +4,6 @@ flask-restx
 flask-smorest
 gunicorn
 flask-cors
+flask-sqlalchemy
+pg8000
+google-cloud-secret-manager

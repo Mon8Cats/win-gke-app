@@ -6,6 +6,8 @@ from flask import Flask, request
 from flask_smorest import Api, Blueprint
 from marshmallow import Schema, fields
 from flask.views import MethodView
+from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 app.config["API_TITLE"] = "User API"
@@ -15,9 +17,15 @@ app.config["OPENAPI_URL_PREFIX"] = "/swagger"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
+app.config.from_pyfile('config.py')
+db = SQLAlchemy(app)
+
 api = Api(app)
 
-blp = Blueprint("users", "users", url_prefix="/users", description="Operations on users")
+blp = Blueprint(
+    "users", "users", url_prefix="/users", description="Operations on users"
+)
+
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -33,13 +41,15 @@ users = [
     {"id": 4, "name": "Bob Brown", "email": "bob.brown@example.com"},
     {"id": 5, "name": "Charlie Davis", "email": "charlie.davis@example.com"},
     {"id": 6, "name": "Steve Kim", "email": "Steve.Kim@example.com"},
-     {"id": 7, "name": "Tom Jones", "email": "Tom.Jones@example.com"}
+    {"id": 7, "name": "Tom Jones", "email": "Tom.Jones@example.com"},
 ]
 
 user_id_counter = 8
 
+
 def find_user(user_id):
     return next((user for user in users if user["id"] == user_id), None)
+
 
 @blp.route("/")
 class UserListResource(MethodView):
@@ -57,6 +67,7 @@ class UserListResource(MethodView):
         users.append(new_user)
         user_id_counter += 1
         return new_user
+
 
 @blp.route("/<int:user_id>")
 class UserResource(MethodView):
@@ -85,6 +96,7 @@ class UserResource(MethodView):
             return {"message": "User not found"}, 404
         users.remove(user)
         return {"message": "User deleted"}, 200
+
 
 api.register_blueprint(blp)
 

@@ -1,3 +1,5 @@
+serviceAccount: infra-service-account@win-gke-cicd.iam.gserviceaccount.com
+
 steps:
   # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
@@ -90,8 +92,8 @@ logsBucket: "gs://win-gke-cicd-log"
 
 #options:
 #  logging: CLOUD_LOGGING_ONLY
-options:
-  serviceAccount: infra-service-account@win-gke-cicd.iam.gserviceaccount.com
+#options:
+#  serviceAccount: infra-service-account@win-gke-cicd.iam.gserviceaccount.com
 
 
 

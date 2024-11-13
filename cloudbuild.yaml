@@ -22,11 +22,11 @@ steps:
         echo "INSTANCE_CONNECTION_NAME: ${_INSTANCE_CONNECTION_NAME}"
 
         # Fetch secrets manually from Google Cloud Secret Manager
-        DB_USER=$(gcloud secrets versions access latest --secret=db_user --project=${_PROJECT_ID})
-        DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password --project=${_PROJECT_ID})
+        DB_USERX=$(gcloud secrets versions access latest --secret=db_user --project=${_PROJECT_ID})
+        DB_PASSWORDX=$(gcloud secrets versions access latest --secret=db_password --project=${_PROJECT_ID})
         
-        echo "DB_USER: ${DB_USER}"
-        echo "DB_PASSWORD: ${DB_PASSWORD}"
+        echo "DB_USER: ${DB_USERX}"
+        echo "DB_PASSWORD: ${DB_PASSWORDX}"
         echo "SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI}"
   
 

@@ -27,7 +27,7 @@ steps:
         
         echo "_DB_USER: ${_DB_USER}"
         echo "_DB_PASSWORD: ${_DB_PASSWORD}"
-        #echo "SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI}"
+
   
 
 
@@ -76,7 +76,7 @@ substitutions:
   _CUSTOM_SERVICE_ACCOUNT: "infra-service-account@win-gke-cicd.iam.gserviceaccount.com"
   _DB_USER: ''
   _DB_PASSWORD: ''
-  _SQLALCHEMY_DATABASE_URI: ''
+
 
 logsBucket: "gs://win-gke-cicd-log"
 

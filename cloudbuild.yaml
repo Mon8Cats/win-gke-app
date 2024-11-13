@@ -30,11 +30,11 @@ steps:
         gcloud auth print-access-token
 
         # Fetch secrets manually from Google Cloud Secret Manager
-        DB_USER=$(gcloud secrets versions access latest --secret=db_user --project=${_PROJECT_ID} --impersonate-service-account=infra-service-account@win-gke-cicd.iam.gserviceaccount.com)
-        DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password --project=${_PROJECT_ID} --impersonate-service-account=infra-service-account@win-gke-cicd.iam.gserviceaccount.com)
+        _DB_USER=$(gcloud secrets versions access latest --secret=db_user --project=${_PROJECT_ID} --impersonate-service-account=infra-service-account@win-gke-cicd.iam.gserviceaccount.com)
+        _DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password --project=${_PROJECT_ID} --impersonate-service-account=infra-service-account@win-gke-cicd.iam.gserviceaccount.com)
 
-        echo "Fetched DB_USER (from Secret Manager): ${DB_USER}"
-        echo "Fetched DB_PASSWORD (from Secret Manager): ${DB_PASSWORD}"
+        echo "Fetched DB_USER (from Secret Manager): ${_DB_USER}"
+        echo "Fetched DB_PASSWORD (from Secret Manager): ${_DB_PASSWORD}"
 
   
 

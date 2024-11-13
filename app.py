@@ -17,8 +17,8 @@ app.config["OPENAPI_URL_PREFIX"] = "/swagger"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-app.config.from_pyfile('config.py')
-db = SQLAlchemy(app)
+#app.config.from_pyfile('config.py')
+#db = SQLAlchemy(app)
 
 api = Api(app)
 

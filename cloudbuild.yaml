@@ -31,6 +31,13 @@ steps:
         echo "Checking Authentication:"
         gcloud auth print-access-token
 
+        gcloud iam roles describe roles/iam.serviceAccountTokenCreator
+        gcloud auth list
+
+        echo "Testing secret access..."
+        gcloud secrets versions access latest --secret=db_user
+        gcloud secrets versions access latest --secret=db_password
+
         # Fetch secrets manually from Google Cloud Secret Manager
         _DB_USER=$(gcloud secrets versions access latest --secret=db_user --project=${_PROJECT_ID} --impersonate-service-account=infra-service-account@win-gke-cicd.iam.gserviceaccount.com)
         _DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password --project=${_PROJECT_ID} --impersonate-service-account=infra-service-account@win-gke-cicd.iam.gserviceaccount.com)

@@ -16,6 +16,8 @@ steps:
     args:
       - '-c'
       - |
+        echo "Active Service Account:"
+        gcloud auth list
         echo "Debugging Environment Variables:"
         echo "PROJECT_ID: ${_PROJECT_ID}"
         echo "PROJECT_NUMBER: ${_PROJECT_NUMBER}"

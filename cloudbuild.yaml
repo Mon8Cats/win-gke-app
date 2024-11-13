@@ -27,7 +27,7 @@ steps:
         
         echo "_DB_USER: ${_DB_USER}"
         echo "_DB_PASSWORD: ${_DB_PASSWORD}"
-        echo "SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI}"
+        #echo "SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI}"
   
 
 

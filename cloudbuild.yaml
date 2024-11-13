@@ -23,7 +23,7 @@ steps:
       - '--platform=managed'
       - '--allow-unauthenticated'
       - '--set-cloudsql-instances=${_INSTANCE_CONNECTION_NAME}'
-      - '--update-secrets=DB_USER=projects/${_PROJECT_ID}/secrets/db_user:latest,DB_PASSWORD=projects/${_PROJECT_ID}/secrets/db_password:latest'
+      - '--update-secrets=DB_USER=projects/${_PROJECT_NUMBER}/secrets/db_user:latest,DB_PASSWORD=projects/${_PROJECT_NUMBER}/secrets/db_password:latest'
       - '--update-env-vars=INSTANCE_CONNECTION_NAME=${_INSTANCE_CONNECTION_NAME},DB_NAME=my_database'
 
 
@@ -47,7 +47,8 @@ timeout: '1200s'
 
 
 substitutions:
-  _PROJECT_ID: "win-gke-cicd"  # Replace with the actual project ID or set dynamically in GitHub Actions
+  _PROJECT_ID: "win-gke-cicd"
+  _PROJECT_NUMBER: '650839457214'
   _ARTIFACT_REPO: "win-repo"
   _INSTANCE_CONNECTION_NAME: "win-gke-cicd:us-central1:my-postgres-instance"
 

@@ -20,10 +20,16 @@ app.config["OPENAPI_SWAGGER_UI_PATH"] = "/"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
 # Load configuration from config.py
-#app.config.from_pyfile("config.py")
+app.config.from_pyfile("config.py")
 
-# Initialize SQLAlchemy and API
-#db = SQLAlchemy(app)
+# Debugging Configuration
+print("SQLALCHEMY_DATABASE_URI:", app.config.get("SQLALCHEMY_DATABASE_URI"))
+
+
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
+
+# Initialize API
 api = Api(app)
 
 # Create a Blueprint for User API

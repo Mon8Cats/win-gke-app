@@ -8,8 +8,10 @@ from marshmallow import Schema, fields
 from flask.views import MethodView
 from flask_sqlalchemy import SQLAlchemy
 
-
+# Initialize Flask app
 app = Flask(__name__)
+
+# OpenAPI and Swagger Configuration
 app.config["API_TITLE"] = "User API"
 app.config["API_VERSION"] = "1.0"
 app.config["OPENAPI_VERSION"] = "3.0.2"
@@ -17,11 +19,14 @@ app.config["OPENAPI_URL_PREFIX"] = "/swagger"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-#app.config.from_pyfile('config.py')
-#db = SQLAlchemy(app)
+# Load configuration from config.py
+app.config.from_pyfile('config.py')
 
+# Initialize SQLAlchemy and API
+db = SQLAlchemy(app)
 api = Api(app)
 
+# Create a Blueprint for User API
 blp = Blueprint(
     "users", "users", url_prefix="/users", description="Operations on users"
 )

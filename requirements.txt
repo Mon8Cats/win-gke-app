@@ -1,9 +1,10 @@
 flask
-flask-swagger-ui
-flask-restx
+#flask-swagger-ui
+#flask-restx
 flask-smorest
 gunicorn
 flask-cors
 flask-sqlalchemy
+marshmallow
 pg8000
 google-cloud-secret-manager

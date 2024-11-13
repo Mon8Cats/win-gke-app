@@ -26,6 +26,9 @@ steps:
         # Explicitly set the project context
         gcloud config set project ${_PROJECT_ID}
 
+        echo "Checking Authentication:"
+        gcloud auth print-access-token
+
         # Fetch secrets manually from Google Cloud Secret Manager
         _DB_USER=$(gcloud secrets versions access latest --secret=db_user --project=${_PROJECT_ID})
         _DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password --project=${_PROJECT_ID})
